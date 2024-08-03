@@ -9,6 +9,7 @@ export default function Home() {
   const [inventory, setInventory] = useState([])
   const [open, setOpen] = useState(false)
   const [itemName, setItemName] = useState('')
+  const [searchText, setSearchText] = useState("")
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'))
@@ -49,6 +50,10 @@ export default function Home() {
         await setDoc(docRef, { quantity: quantity - 1 })
       }
     }
+    
+    
+
+  
 
     await updateInventory()
   }
@@ -59,6 +64,12 @@ export default function Home() {
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+
+
+  const applyFilter = () => {
+    return inventory.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
+  }
+  const filteredItems = applyFilter()
 
   return (
     <Box
@@ -108,6 +119,8 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
+
+
       {/* <Typography variant="h1">Inventory Management</Typography> */}
       <Button
         variant="contained"
@@ -131,7 +144,7 @@ export default function Home() {
 
         <Stack width="800px" height="300px" spacing={2} overflow="auto">
           {
-            inventory.map(({ name, quantity }) => (
+            filteredItems.map(({ name, quantity }) => (
               <Box
                 key={name}
                 width="100%"
@@ -162,9 +175,20 @@ export default function Home() {
                   </Button>
                 </Stack>
               </Box>
+              
+              
             ))
-          }
-        </Stack>
+          } 
+        </Stack>        
+
+        <TextField
+              variant='outlined'
+              fullWidth
+              value={searchText}
+              label="Search for an item"
+              onChange={(e) => {
+                setSearchText(e.target.value)
+              }}></TextField>
       </Box>
     </Box>
   )
